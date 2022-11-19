@@ -3,8 +3,10 @@
     <div class="card-content">
       <div class="content">
         {{ note.content }}
-        <div class="has-text-right has-text-grey-light mt-2">
-          <small>{{ characterLength }} </small>
+        <div class="columns is-mobile has-text-grey-light mt-2">
+          <small class="column">{{ dateFormatted }}</small>
+
+          <small class="column has-text-right">{{ characterLength }} </small>
         </div>
       </div>
     </div>
@@ -19,20 +21,25 @@
         >Delete</a
       > -->
       <a
-        @click.prevent="modals.deleteNote=true"
+        @click.prevent="modals.deleteNote = true"
         href="#"
         class="card-footer-item"
         >Delete</a
       >
     </footer>
-    <ModalDeleteNote v-if="modals.deleteNote" v-model="modals.deleteNote" :noteId='note.id'/>
+    <ModalDeleteNote
+      v-if="modals.deleteNote"
+      v-model="modals.deleteNote"
+      :noteId="note.id"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, reactive, ref } from "vue";
 import { useStoreNotes } from "@/stores/storeNotes";
-import ModalDeleteNote from '@/components/Notes/ModalDeleteNote.vue'
+import ModalDeleteNote from "@/components/Notes/ModalDeleteNote.vue";
+import { useNow, useDateFormat } from "@vueuse/core";
 
 //props
 const props = defineProps({
@@ -43,6 +50,12 @@ const props = defineProps({
 });
 
 const storeNotes = useStoreNotes();
+
+//date formated
+const dateFormatted = computed(() => {
+  let date = new Date(parseInt(props.note.date));
+  return useDateFormat(date, "YYYY-MM-DD @ HH:mm").value;
+});
 //emits
 const emit = defineEmits(["deleteClicked"]);
 
